@@ -2,7 +2,9 @@
 title: "Assignment 1 - Data Cleaning - Instructions"
 author: "Bianka Rumi"
 date: "5/9-2019"
-output: html_document
+output: 
+  md_document:
+      variant: markdown_github
 ---
 
 # Assignment 1, Language development in Autism Spectrum Disorder (ASD) - Brushing up your code skills
@@ -92,6 +94,7 @@ Tip: look through the chapter on data transformation in R for data science (http
 
 
 ```{r}
+plot(LU_train)
 
 ```
 
