@@ -164,6 +164,11 @@ Most variables should make sense, here the less intuitive ones.
 Feel free to rename the variables into something you can remember (i.e. nonVerbalIQ, verbalIQ)
 
 ```{r}
+demo <- select(demo_train, SUBJ, VISIT, Diagnosis, Ethnicity, Gender, Age, ASD_level = ADOS, nonVerbalIQ = MullenRaw, VerbalIQ = ExpressiveLangRaw,Socialization)
+
+LU <-  select(LU_train, SUBJ, VISIT, MOT_MLU, CHI_MLU)
+
+token <- select(token_train, SUBJ, VISIT,  types_MOT, types_CHI, tokens_MOT, tokens_CHI)
 
 ```
 
@@ -174,13 +179,13 @@ Some things to pay attention to:
 * make sure to understand whether (and if so why) there are NAs in the dataset (e.g. some measures were not taken at all visits, some recordings were lost or permission to use was withdrawn)
 
 ```{r}
-
-
+merged<-merge(demo,LU)
+df_train<-merge(merged,token)
 ```
 
 
 2f. Only using clinical measures from Visit 1
-In order for our models to be useful, we want to miimize the need to actually test children as they develop. In other words, we would like to be able to understand and predict the children's linguistic development after only having tested them once. Therefore we need to make sure that our ADOS, MullenRaw, ExpressiveLangRaw and Socialization variables are reporting (for all visits) only the scores from visit 1.
+In order for our models to be useful, we want to minimize the need to actually test children as they develop. In other words, we would like to be able to understand and predict the children's linguistic development after only having tested them once. Therefore we need to make sure that our ADOS, MullenRaw, ExpressiveLangRaw and Socialization variables are reporting (for all visits) only the scores from visit 1.
 
 A possible way to do so:
 * create a new dataset with only visit 1, child id and the 4 relevant clinical variables to be merged with the old dataset
@@ -190,6 +195,10 @@ A possible way to do so:
 
 
 ```{r}
+visit1<-filter(df_train,VISIT=="1")
+visit1<-select(visit1,SUBJ,ASD_level1=ASD_level,nonVerbalIQ1=nonVerbalIQ,VerbalIQ1=VerbalIQ,Socialization1=Socialization)
+df_train<-merge(visit1,df_train)
+
 
 ```
 
@@ -201,8 +210,20 @@ Now we want to
 * Save the data set using into a csv file. Hint: look into write.csv()
 
 ```{r}
+df_train$SUBJ<-as.factor(df_train$SUBJ)
+?levels()
 
-```
+ID<-(1:61)
+
+levels(df_train$SUBJ)=ID
+
+df_train$Gender<-ifelse(df_train$Gender==1,"F","M")
+
+
+df_train$Diagnosis<-ifelse(df_train$Diagnosis=="A","ASD","TD")
+
+write.csv(df_train,file = "df_train.csv")
+
 
 
 3) BONUS QUESTIONS
