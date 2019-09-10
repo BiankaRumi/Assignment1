@@ -211,7 +211,7 @@ Now we want to
 
 ```{r}
 df_train$SUBJ<-as.factor(df_train$SUBJ)
-?levels()
+
 
 ID<-(1:61)
 
@@ -225,7 +225,7 @@ df_train$Diagnosis<-ifelse(df_train$Diagnosis=="A","ASD","TD")
 write.csv(df_train,file = "df_train.csv")
 
 
-
+```
 3) BONUS QUESTIONS
 The aim of this last section is to make sure you are fully fluent in the tidyverse.
 Here's the link to a very helpful book, which explains each function:
@@ -239,7 +239,9 @@ List all kids who:
 
 ```{r}
 
-
+filter2.7<-filter(df_train,CHI_MLU>2.7)
+filter.1.5<-filter(df_train,CHI_MLU<1.5)
+non_complete<-group_by(df_train,SUBJ)%>%summarize("number"=n())%>%filter(number<6)
 ```
 
 
@@ -249,7 +251,9 @@ USING ARRANGE
 2. Sort kids to find the kid who produced the least amount of words on the 1st visit.
 
 ```{r}
+most6<-filter(df_train,VISIT==6)%>%arrange(desc(tokens_CHI))
 
+least1<-filter(df_train,VISIT==1)%>%arrange(tokens_CHI)
 
 ```
 
@@ -259,6 +263,9 @@ USING SELECT
 2. What happens if you include the name of a variable multiple times in a select() call?
 
 ```{r}
+subset<-subset(df_train,Diagnosis=="ASD")%>%select(SUBJ,CHI_MLU,tokens_CHI,tokens_CHI)
+
+#nothing happens if you include variable name twice
 
 ```
 
@@ -269,6 +276,9 @@ USING MUTATE, SUMMARISE and PIPES
 3. The solution to task above enables us to assess the average amount of words produced by each child. Why don't we just use these average values to describe the language production of the children? What is the advantage of keeping all the data?
 
 ```{r}
+df_train$mean<-mean(df_train$tokens_CHI)
 
+meansubjectwords<-group_by(df_train,SUBJ)%>%summarise(mean(df_train$tokens_CHI))
+df_train_mean<-merge(df_train,meansubjectwords)
 
 ```
